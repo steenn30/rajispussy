@@ -1,0 +1,12 @@
+{
+  "name": "script-market",
+  "version": "1.0.0",
+  "description": "Offline React-style demo for script marketplace",
+  "private": true,
+  "scripts": {
+    "start": "npx http-server . -c-1 -p 3000"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
