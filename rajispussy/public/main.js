@@ -173,7 +173,7 @@ function decodeRouteName(value) {
 
 function parseRoute() {
   const hash = window.location.hash.replace(/^#/, '');
-  const match = hash.match(/^\\/author\\/(.+)$/);
+  const match = hash.match(/^\/author\/(.+)$/);
   if (match) {
     return { name: 'author', authorName: decodeRouteName(match[1]) };
   }
