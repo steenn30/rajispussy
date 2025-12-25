@@ -36,7 +36,8 @@ function resolvePath(urlPath) {
   }
 
   if (cleanPath.startsWith('/src/')) {
-    return safeJoin(SRC_DIR, cleanPath.replace('/src/', ''));
+    const candidate = safeJoin(SRC_DIR, cleanPath.replace('/src/', ''));
+    return candidate && fs.existsSync(candidate) ? candidate : null;
   }
 
   const publicPath = safeJoin(PUBLIC_DIR, cleanPath.replace(/^\//, ''));
@@ -44,13 +45,19 @@ function resolvePath(urlPath) {
     return publicPath;
   }
 
+  // If a static asset was explicitly requested but not found, surface a 404
+  if (/\.(js|css|json|png|jpg|jpeg|svg|map)$/.test(cleanPath)) {
+    return null;
+  }
+
+  // Fallback to SPA shell for other routes
   return path.join(PUBLIC_DIR, 'index.html');
 }
 
 const server = http.createServer((req, res) => {
   const target = resolvePath(req.url || '/');
   if (!target) {
-    send(res, 400, 'Bad request');
+    send(res, 404, 'Not found');
     return;
   }
 

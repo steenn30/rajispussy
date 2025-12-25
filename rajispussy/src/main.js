@@ -501,4 +501,16 @@ function App() {
 }
 
 const root = createRoot(document.getElementById('root'));
-root.render(h(App));
+const rootContainer = document.getElementById('root');
+if (rootContainer) {
+  rootContainer.textContent = 'Loading Script Market...';
+}
+
+try {
+  root.render(h(App));
+} catch (err) {
+  console.error('Failed to render Script Market', err);
+  if (rootContainer) {
+    rootContainer.innerHTML = `<div style="padding:16px;color:#fee2e2;background:#450a0a;border-radius:12px;border:1px solid #7f1d1d;">Failed to load app: ${err.message}</div>`;
+  }
+}
