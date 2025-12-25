@@ -11,10 +11,10 @@ A React-style front-end experience for showcasing movie scripts with account cre
 
 ## Getting started
 1. Install Node 18+.
-2. From the repo root run `npm start`.
-3. Open `http://localhost:3000` in your browser.
+2. Serve the `public/` folder with any static host (e.g., `python -m http.server 3000` from `public`) or drop the files into your Spring app's static folder.
+3. Open `http://localhost:3000` (or your configured host) in your browser.
 
-The dev server serves native ES modules; no build step is required. All React-like behavior is powered by the local runtime in `src/runtime` to avoid external downloads.
+The app ships as native ES modules in `public/`—no bundler required. All React-like behavior is powered by the local runtime in `public/runtime` to avoid external downloads.
 
 ## Development notes
 - State is in-memory for quick demos; there is no backend or persistence layer.
