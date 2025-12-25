@@ -24,15 +24,23 @@ function renderVNode(vnode, path = '0') {
   if (typeof vnode === 'string' || typeof vnode === 'number') return document.createTextNode(String(vnode));
 
   const { type, props, children } = vnode;
+  const mergedChildren =
+    children && children.length
+      ? children
+      : props && Array.isArray(props.children)
+        ? props.children
+        : props && props.children
+          ? [props.children]
+          : [];
 
   if (typeof type === 'function' && type.prototype instanceof React.Component) {
     let instance = instanceStore.get(path);
     if (!instance) {
-      instance = new type({ ...(props || {}), children });
+      instance = new type({ ...(props || {}), children: mergedChildren });
       instance.__path = path;
       instanceStore.set(path, instance);
     } else {
-      instance.props = { ...(props || {}), children };
+      instance.props = { ...(props || {}), children: mergedChildren };
     }
     instance.__path = path;
     const rendered = withComponent(path, () => instance.render());
@@ -40,7 +48,7 @@ function renderVNode(vnode, path = '0') {
   }
 
   if (typeof type === 'function') {
-    const rendered = withComponent(path, () => type({ ...(props || {}), children }));
+    const rendered = withComponent(path, () => type({ ...(props || {}), children: mergedChildren }));
     return renderVNode(rendered, `${path}.0`);
   }
 
