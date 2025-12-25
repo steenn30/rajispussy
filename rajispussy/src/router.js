@@ -1,4 +1,5 @@
 import React, { Component, cloneElement } from './runtime/react.js';
+import { forceRender } from './runtime/react-dom.js';
 
 function matchPath(pattern, path) {
   const patternParts = pattern.replace(/^#?\//, '').split('/');
@@ -15,41 +16,26 @@ function matchPath(pattern, path) {
 }
 
 export class HashRouter extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { path: this.getPath() };
-    this.onChange = this.onChange.bind(this);
-  }
-
-  componentDidMount() {
-    window.addEventListener('hashchange', this.onChange);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('hashchange', this.onChange);
-  }
-
-  onChange() {
-    this.setState({ path: this.getPath() });
-  }
-
-  getPath() {
-    return window.location.hash.replace(/^#/, '') || '/';
-  }
-
   render() {
+    const path = window.location.hash.replace(/^#/, '') || '/';
     const { children } = this.props;
-    const { path } = this.state;
-    return React.createElement(React.Fragment, null, ...(Array.isArray(children) ? children : [children]).map((child, idx) => {
-      if (!child) return null;
-      return cloneElement(child, { key: child.key || idx, currentPath: path });
-    }));
+    console.log('HashRouter render path', path);
+    const kids = Array.isArray(children) ? children : [children];
+    return React.createElement(
+      React.Fragment,
+      null,
+      ...kids.map((child, idx) => {
+        if (!child) return null;
+        return cloneElement(child, { key: child.key || idx, currentPath: path });
+      }),
+    );
   }
 }
 
 export class Route extends Component {
   render() {
     const { path, element, currentPath } = this.props;
+    console.log('Route check', path, 'vs', currentPath);
     const params = matchPath(path, currentPath || '/');
     if (!params) return null;
     if (element) return element;
@@ -64,6 +50,7 @@ export class Link extends Component {
     const handle = (e) => {
       e.preventDefault();
       window.location.hash = to.startsWith('#') ? to : `#${to}`;
+      forceRender();
     };
     return React.createElement('a', { href: to.startsWith('#') ? to : `#${to}`, onClick: handle, className: this.props.className }, children);
   }

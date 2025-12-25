@@ -13,7 +13,7 @@ class App extends Component {
       React.createElement(Route, { path: '/', element: React.createElement(HomePage, null) }),
       React.createElement(Route, {
         path: '/author/:name',
-        element: React.createElement(ProfileRoute, null),
+        component: ProfileRoute,
       }),
     );
   }

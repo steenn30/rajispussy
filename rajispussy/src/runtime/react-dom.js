@@ -1,5 +1,8 @@
 import React, { Fragment, __setRenderScheduler, withComponent } from './react.js';
 
+const instanceStore = new Map();
+let globalFlush = () => {};
+
 function isEventProp(key) {
   return /^on[A-Z]/.test(key);
 }
@@ -24,7 +27,14 @@ function renderVNode(vnode, path = '0') {
   const { type, props, children } = vnode;
 
   if (typeof type === 'function' && type.prototype instanceof React.Component) {
-    const instance = new type({ ...(props || {}), children });
+    let instance = instanceStore.get(path);
+    if (!instance) {
+      instance = new type({ ...(props || {}), children });
+      instance.__path = path;
+      instanceStore.set(path, instance);
+    } else {
+      instance.props = { ...(props || {}), children };
+    }
     instance.__path = path;
     const rendered = withComponent(path, () => instance.render());
     return renderVNode(rendered, `${path}.0`);
@@ -63,8 +73,13 @@ export function createRoot(container) {
   };
 
   __setRenderScheduler(flush);
+  globalFlush = flush;
 
   return { render };
+}
+
+export function forceRender() {
+  globalFlush();
 }
 
 export default { createRoot };
