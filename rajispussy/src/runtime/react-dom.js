@@ -24,7 +24,7 @@ function renderVNode(vnode, path = '0') {
   const { type, props, children } = vnode;
 
   if (typeof type === 'function' && type.prototype instanceof React.Component) {
-    const instance = new type(props || {});
+    const instance = new type({ ...(props || {}), children });
     instance.__path = path;
     const rendered = withComponent(path, () => instance.render());
     return renderVNode(rendered, `${path}.0`);
@@ -57,6 +57,7 @@ export function createRoot(container) {
 
   const flush = () => {
     if (!rootVNode) return;
+    console.log('flush render');
     const nextDom = renderVNode(rootVNode, '0');
     container.replaceChildren(nextDom);
   };
