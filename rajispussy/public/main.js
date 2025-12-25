@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from './runtime/react.js';
 import { createRoot } from './runtime/react-dom.js';
+import ScreenwriterProfileCustomerView from './ScreenwriterProfileCustomerView.js';
 
 const h = React.createElement;
 
@@ -158,6 +159,53 @@ const authorProfiles = {
   },
 };
 
+function encodeRouteName(name) {
+  return encodeURIComponent(name);
+}
+
+function decodeRouteName(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function parseRoute() {
+  const hash = window.location.hash.replace(/^#/, '');
+  const match = hash.match(/^\\/author\\/(.+)$/);
+  if (match) {
+    return { name: 'author', authorName: decodeRouteName(match[1]) };
+  }
+  return { name: 'home' };
+}
+
+const routeListeners = new Set();
+let currentRoute = parseRoute();
+
+function notifyRoute() {
+  currentRoute = parseRoute();
+  routeListeners.forEach((listener) => listener(currentRoute));
+}
+
+window.addEventListener('hashchange', notifyRoute);
+
+function useRoute() {
+  const [route, setRoute] = useState(currentRoute);
+  if (!routeListeners.has(setRoute)) {
+    routeListeners.add(setRoute);
+  }
+  return route;
+}
+
+function goToAuthor(name) {
+  window.location.hash = `#/author/${encodeRouteName(name)}`;
+}
+
+function goHome() {
+  window.location.hash = '#/';
+}
+
 function InfoBar() {
   return h(
     'div',
@@ -220,15 +268,6 @@ function FeaturedScripts({ scripts }) {
 }
 
 function FeaturedAuthors({ authors }) {
-  const [selectedAuthor, setSelectedAuthor] = useState(null);
-
-  const openProfile = (name) => {
-    const profile = authorProfiles[name];
-    if (profile) setSelectedAuthor(profile);
-  };
-
-  const closeProfile = () => setSelectedAuthor(null);
-
   return h(
     'section',
     { className: 'card' },
@@ -244,11 +283,7 @@ function FeaturedAuthors({ authors }) {
           h(
             'div',
             null,
-            h(
-              'button',
-              { className: 'author-name linkish', type: 'button', onClick: () => openProfile(author.name) },
-              author.name,
-            ),
+            h('button', { className: 'author-name linkish', type: 'button', onClick: () => goToAuthor(author.name) }, author.name),
             h(
               'div',
               { className: 'author-genres' },
@@ -258,7 +293,6 @@ function FeaturedAuthors({ authors }) {
         ),
       ),
     ),
-    selectedAuthor ? h(AuthorProfile, { profile: selectedAuthor, onClose: closeProfile }) : null,
   );
 }
 
@@ -329,87 +363,35 @@ function SignIn() {
   return h('div', null, 'Sign In form placeholder');
 }
 
-function AuthorProfile({ profile, onClose }) {
-  return h(
-    'div',
-    { className: 'overlay' },
-    h(
-      'div',
-      { className: 'profile-card' },
-      h(
-        'div',
-        { className: 'profile-header' },
-        h('img', { src: profile.avatar, alt: `${profile.name} avatar`, className: 'profile-avatar' }),
-        h('div', null, h('h2', { className: 'profile-name' }, profile.name), h('p', { className: 'profile-bio' }, profile.bio)),
-        h('button', { className: 'secondary', type: 'button', onClick: onClose }, 'Close'),
-      ),
-      h(
-        'div',
-        { className: 'profile-meta' },
-        h('div', { className: 'tag' }, `Scripts available: ${profile.scriptsAvailable}`),
-        h('div', { className: 'tag' }, `Scripts sold: ${profile.scriptsSold}`),
-        h('div', { className: 'tag' }, `Awards: ${profile.awards.join(', ') || 'None'}`),
-      ),
-      h('h3', null, 'Scripts'),
-      h(
-        'div',
-        { className: 'profile-scripts' },
-        profile.scripts.map((script) =>
-          h(
-            'article',
-            { key: script.id, className: 'script-card detailed' },
-            h(
-              'div',
-              { className: 'script-header' },
-              h('img', { src: script.image, alt: `${script.title} poster`, className: 'script-logo large' }),
-              h('div', null, h('div', { className: 'tag' }, `$${script.price.toFixed(2)}`), h('h3', { style: { margin: '4px 0 0' } }, script.title)),
-            ),
-            h('p', { className: 'profile-script-desc' }, script.description),
-            h(
-              'div',
-              { className: 'profile-script-meta' },
-              h('span', { className: 'tag' }, `Actors needed: ${script.actorsNeeded}`),
-              h('span', { className: 'tag' }, `Production: ${script.productionNotes}`),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-function Router({ route, children }) {
-  // For now, always render the home experience and skip sign-in/up routes.
-  return h(React.Fragment || 'div', null, children);
-}
-
 function App() {
   const [scripts] = useState(defaultScripts);
   const [query, setQuery] = useState('');
+  const route = useRoute();
   const featured = useMemo(() => scripts.filter((s) => s.featured), [scripts]);
 
+  if (route.name === 'author') {
+    const profile = authorProfiles[route.authorName];
+    return h(ScreenwriterProfileCustomerView, { profile, onBack: goHome });
+  }
+
   return h(
-    Router,
-    { route: 'home' },
+    'main',
+    { className: 'app-shell' },
+    h(InfoBar),
     h(
-      'main',
-      { className: 'app-shell' },
-      h(InfoBar),
+      'header',
+      { className: 'page-header' },
+      h('h1', { className: 'page-title' }, 'Script Market'),
       h(
-        'header',
-        { className: 'page-header' },
-        h('h1', { className: 'page-title' }, 'Script Market'),
-        h(
-          'p',
-          { style: { color: '#cbd5e1', maxWidth: 720 } },
-          'Featured scripts, highlighted authors, and the latest drops—all in one place.',
-        ),
+        'p',
+        { style: { color: '#cbd5e1', maxWidth: 720 } },
+        'Featured scripts, highlighted authors, and the latest drops—all in one place.',
       ),
-      h(FeaturedScripts, { scripts: featured }),
-      h(FeaturedAuthors, { authors: featuredAuthors }),
-      h(SearchBar, { query, setQuery }),
-      h(RecentScripts, { scripts, query }),
     ),
+    h(FeaturedScripts, { scripts: featured }),
+    h(FeaturedAuthors, { authors: featuredAuthors }),
+    h(SearchBar, { query, setQuery }),
+    h(RecentScripts, { scripts, query }),
   );
 }
 
