@@ -42,7 +42,7 @@ export function BrowserRouter({ children }) {
     window.history.pushState({}, '', target);
     notify();
   };
-  return React.createElement(Routes, { children, path, navigate: navigateRef });
+  return React.createElement(Routes, { path, navigate: navigateRef }, children);
 }
 
 export function Routes({ children, path, navigate }) {
