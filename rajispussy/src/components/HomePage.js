@@ -1,4 +1,5 @@
 import React, { Component } from '../runtime/react.js';
+import { Link } from 'react-router-dom';
 import { authors, scripts } from '../data/seed.js';
 
 class InfoBar extends Component {
@@ -79,12 +80,8 @@ class FeaturedAuthors extends Component {
               'div',
               null,
               React.createElement(
-                'button',
-                {
-                  type: 'button',
-                  className: 'author-name linkish',
-                  onClick: () => navigate && navigate(`/profile/${encodeURIComponent(author.name)}`),
-                },
+                Link,
+                { to: `/profile/${encodeURIComponent(author.name)}`, className: 'author-name linkish' },
                 author.name,
               ),
               React.createElement(

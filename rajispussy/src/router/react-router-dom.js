@@ -13,7 +13,9 @@ function formatTo(to) {
 
 function getPath() {
   const hash = window.location.hash.replace(/^#/, '');
-  return hash || '/';
+  if (hash) return hash;
+  const path = window.location.pathname || '/';
+  return path || '/';
 }
 
 function notify(next = getPath()) {
@@ -34,6 +36,10 @@ function setHash(cleanPath) {
 function ensureListeners() {
   if (isInitialized) return;
   isInitialized = true;
+  if (!window.location.hash) {
+    // normalize to hash routing so static hosting works without server rewrites
+    window.location.hash = '#/';
+  }
   const handler = () => notify();
   window.addEventListener('popstate', handler);
   window.addEventListener('hashchange', handler);
@@ -67,14 +73,14 @@ export function Route(props) {
   return React.createElement(React.Fragment, null);
 }
 
-export function Link({ to, children }) {
+export function Link({ to, children, className }) {
   const clean = formatTo(to);
   const href = clean.startsWith('#') ? clean : `#${clean}`;
   const handle = (e) => {
     e.preventDefault();
     navigateRef(clean);
   };
-  return React.createElement('a', { href, onClick: handle }, children);
+  return React.createElement('a', { href, onClick: handle, class: className }, children);
 }
 
 function matchPath(pattern, pathname) {
