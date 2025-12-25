@@ -188,6 +188,14 @@ function notifyRoute() {
   routeListeners.forEach((listener) => listener(currentRoute));
 }
 
+function setHashRoute(targetHash) {
+  if (window.location.hash === targetHash) {
+    notifyRoute();
+  } else {
+    window.location.hash = targetHash;
+  }
+}
+
 window.addEventListener('hashchange', notifyRoute);
 
 function useRoute() {
@@ -199,11 +207,11 @@ function useRoute() {
 }
 
 function goToAuthor(name) {
-  window.location.hash = `#/author/${encodeRouteName(name)}`;
+  setHashRoute(`#/author/${encodeRouteName(name)}`);
 }
 
 function goHome() {
-  window.location.hash = '#/';
+  setHashRoute('#/');
 }
 
 function InfoBar() {
