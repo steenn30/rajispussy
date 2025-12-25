@@ -16,8 +16,30 @@ function matchPath(pattern, path) {
 }
 
 export class HashRouter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { path: this.getPath() };
+    this.onHashChange = this.onHashChange.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('hashchange', this.onHashChange);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('hashchange', this.onHashChange);
+  }
+
+  onHashChange() {
+    this.setState({ path: this.getPath() }, () => forceRender());
+  }
+
+  getPath() {
+    return window.location.hash.replace(/^#/, '') || '/';
+  }
+
   render() {
-    const path = window.location.hash.replace(/^#/, '') || '/';
+    const path = this.state.path;
     const { children } = this.props;
     console.log('HashRouter render path', path);
     const kids = Array.isArray(children) ? children : [children];
