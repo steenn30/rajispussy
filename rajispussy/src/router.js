@@ -24,10 +24,12 @@ export class Router extends Component {
 
   componentDidMount() {
     window.addEventListener('popstate', this.onPop);
+    window.addEventListener('hashchange', this.onPop);
   }
 
   componentWillUnmount() {
     window.removeEventListener('popstate', this.onPop);
+    window.removeEventListener('hashchange', this.onPop);
   }
 
   onPop() {
@@ -40,6 +42,10 @@ export class Router extends Component {
   }
 
   navigate(to) {
+    if (typeof to === 'number') {
+      window.history.go(to);
+      return;
+    }
     const target = to.startsWith('#') ? to : `#${to}`;
     window.history.pushState({}, '', target);
     this.setState({ path: this.getPath() });
