@@ -1,6 +1,6 @@
 import React from './runtime/react.js';
 import { createRoot } from './runtime/react-dom.js';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from './router/react-router-dom.js';
 import HomePage from './components/HomePage.js';
 import ScreenwriterProfileCustomerView from './components/ScreenwriterProfileCustomerView.js';
 import { profiles } from './data/seed.js';
