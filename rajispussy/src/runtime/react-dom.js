@@ -1,7 +1,6 @@
 import React, { Fragment, __setRenderScheduler, withComponent } from './react.js';
 
 const instanceStore = new Map();
-let globalFlush = () => {};
 
 function isEventProp(key) {
   return /^on[A-Z]/.test(key);
@@ -67,19 +66,12 @@ export function createRoot(container) {
 
   const flush = () => {
     if (!rootVNode) return;
-    console.log('flush render');
     const nextDom = renderVNode(rootVNode, '0');
     container.replaceChildren(nextDom);
   };
 
   __setRenderScheduler(flush);
-  globalFlush = flush;
 
   return { render };
 }
-
-export function forceRender() {
-  globalFlush();
-}
-
 export default { createRoot };

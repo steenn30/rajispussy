@@ -1,5 +1,4 @@
 import React, { Component, cloneElement } from './runtime/react.js';
-import { forceRender } from './runtime/react-dom.js';
 
 function matchPath(pattern, path) {
   const patternParts = pattern.replace(/^#?\//, '').split('/');
@@ -41,7 +40,6 @@ export class HashRouter extends Component {
   render() {
     const path = this.state.path;
     const { children } = this.props;
-    console.log('HashRouter render path', path);
     const kids = Array.isArray(children) ? children : [children];
     return React.createElement(
       React.Fragment,
@@ -57,7 +55,6 @@ export class HashRouter extends Component {
 export class Route extends Component {
   render() {
     const { path, element, currentPath } = this.props;
-    console.log('Route check', path, 'vs', currentPath);
     const params = matchPath(path, currentPath || '/');
     if (!params) return null;
     if (element) return element;
@@ -72,7 +69,7 @@ export class Link extends Component {
     const handle = (e) => {
       e.preventDefault();
       window.location.hash = to.startsWith('#') ? to : `#${to}`;
-      forceRender();
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
     };
     return React.createElement('a', { href: to.startsWith('#') ? to : `#${to}`, onClick: handle, className: this.props.className }, children);
   }

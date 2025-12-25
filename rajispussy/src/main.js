@@ -29,7 +29,5 @@ class ProfileRoute extends Component {
   }
 }
 
-console.log('Booting Script Market app');
 const root = createRoot(document.getElementById('root'));
 root.render(React.createElement(App, null));
-console.log('Rendered root');
