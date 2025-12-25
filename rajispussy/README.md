@@ -1,6 +1,6 @@
-# Script Market React Library
+# Script Market React Project
 
-A lightweight React front-end experience for showcasing movie scripts with account creation and social sign-in call-to-actions. Everything runs directly in the browser via CDN React builds—no package install required.
+A React-style front-end experience for showcasing movie scripts with account creation and social sign-in call-to-actions. The project runs entirely offline using a lightweight React-compatible runtime bundled in the repository, so `npm start` works without downloading packages.
 
 ## Features
 - **User authentication UI** with account creation, password criteria checks (length, uppercase, number, special character), and confirmation matching.
@@ -10,10 +10,12 @@ A lightweight React front-end experience for showcasing movie scripts with accou
 - **Publishing form** to add new scripts with genre, price, and logo URL selection.
 
 ## Getting started
-1. Open `index.html` in a modern browser. The page loads React from a CDN and runs without a build step.
-2. Create an account or click a social provider to see status messages.
-3. Browse, search, and add scripts. Use the "Feature this script" checkbox to surface items in the featured strip and attach a custom logo URL if you have one.
+1. Install Node 18+.
+2. From the repo root run `npm start`.
+3. Open `http://localhost:3000` in your browser.
+
+The dev server serves native ES modules; no build step is required. All React-like behavior is powered by the local runtime in `src/runtime` to avoid external downloads.
 
 ## Development notes
-- The experience is framework-only and does not persist data. All state is in-memory for quick demos.
-- If you prefer to host locally, serve the folder with any static server (for example, `python -m http.server 8000`) and open `http://localhost:8000` in your browser.
+- State is in-memory for quick demos; there is no backend or persistence layer.
+- The runtime implements a minimal React-compatible API (createElement, useState, useMemo, and createRoot) sufficient for this UI. If you want to swap in the official React packages, you can point imports to real React and ReactDOM and keep the components as-is.
