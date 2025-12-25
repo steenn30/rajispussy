@@ -1,5 +1,4 @@
 import React, { Component } from '../runtime/react.js';
-import { Link } from '../router/react-router-dom.js';
 import { authors, scripts } from '../data/seed.js';
 
 class InfoBar extends Component {
@@ -63,6 +62,7 @@ class FeaturedScripts extends Component {
 
 class FeaturedAuthors extends Component {
   render() {
+    const { navigate } = this.props;
     return React.createElement(
       'section',
       { className: 'card' },
@@ -78,7 +78,15 @@ class FeaturedAuthors extends Component {
             React.createElement(
               'div',
               null,
-              React.createElement(Link, { to: `/profile/${encodeURIComponent(author.name)}`, className: 'author-name linkish' }, author.name),
+              React.createElement(
+                'button',
+                {
+                  type: 'button',
+                  className: 'author-name linkish',
+                  onClick: () => navigate && navigate(`/profile/${encodeURIComponent(author.name)}`),
+                },
+                author.name,
+              ),
               React.createElement(
                 'div',
                 { className: 'author-genres' },
