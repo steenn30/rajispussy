@@ -1,9 +1,9 @@
 {
   "name": "script-market",
   "version": "1.0.0",
-  "description": "Offline-friendly React-style demo for script marketplace",
+  "description": "Offline React-style demo for script marketplace",
   "private": true,
   "scripts": {
-    "start": "python -m http.server 3000 --directory public"
+    "start": "node server.js"
   }
 }

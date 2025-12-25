@@ -1,84 +1,85 @@
 export const Fragment = Symbol('Fragment');
 
 let currentFrame = null;
-let scheduleRender = () => {};
+let scheduledRender = () => {};
 const hookStore = new Map();
 
-function flat(children) {
-  const output = [];
-  children.forEach((child) => {
-    if (Array.isArray(child)) {
-      output.push(...flat(child));
-    } else if (child === false || child === null || child === undefined) {
+export class Component {
+  constructor(props) {
+    this.props = props || {};
+    this.state = this.state || {};
+    this.__path = '';
+  }
+
+  setState(update) {
+    const next = typeof update === 'function' ? update(this.state, this.props) : update;
+    this.state = { ...this.state, ...next };
+    scheduledRender();
+  }
+
+  // To be overridden
+  render() {
+    return null;
+  }
+}
+
+function flatten(children) {
+  const out = [];
+  children.forEach((c) => {
+    if (Array.isArray(c)) out.push(...flatten(c));
+    else if (c === null || c === undefined || c === false) {
       // skip
-    } else {
-      output.push(child);
-    }
+    } else out.push(c);
   });
-  return output;
+  return out;
 }
 
 export function createElement(type, props, ...children) {
-  return {
-    type,
-    props: props || {},
-    children: flat(children),
-  };
+  return { type, props: props || {}, children: flatten(children) };
+}
+
+export function cloneElement(element, extraProps) {
+  return createElement(element.type, { ...(element.props || {}), ...(extraProps || {}) }, ...(element.children || []));
 }
 
 export function __setRenderScheduler(fn) {
-  scheduleRender = fn;
+  scheduledRender = fn;
 }
 
 export function withComponent(path, renderFn) {
-  const previous = currentFrame;
+  const prev = currentFrame;
   const hooks = hookStore.get(path) || [];
   currentFrame = { hooks, hookIndex: 0, path };
   const result = renderFn();
   hookStore.set(path, currentFrame.hooks);
-  currentFrame = previous;
+  currentFrame = prev;
   return result;
 }
 
 function ensureFrame() {
-  if (!currentFrame) {
-    throw new Error('Hooks can only be called inside components.');
-  }
+  if (!currentFrame) throw new Error('Hooks must be used inside a component');
   return currentFrame;
 }
 
-export function useState(initialValue) {
+export function useState(initial) {
   const frame = ensureFrame();
   const idx = frame.hookIndex++;
   if (frame.hooks[idx] === undefined) {
-    frame.hooks[idx] = typeof initialValue === 'function' ? initialValue() : initialValue;
+    frame.hooks[idx] = typeof initial === 'function' ? initial() : initial;
   }
   const setState = (value) => {
     const next = typeof value === 'function' ? value(frame.hooks[idx]) : value;
     frame.hooks[idx] = next;
-    scheduleRender();
+    scheduledRender();
   };
   return [frame.hooks[idx], setState];
 }
 
-export function useMemo(factory, deps = []) {
-  const frame = ensureFrame();
-  const idx = frame.hookIndex++;
-  const record = frame.hooks[idx];
-  if (record) {
-    const [prevDeps, value] = record;
-    const same = deps.length === prevDeps.length && deps.every((d, i) => Object.is(d, prevDeps[i]));
-    if (same) return value;
-  }
-  const value = factory();
-  frame.hooks[idx] = [deps, value];
-  return value;
-}
-
 const React = {
   Fragment,
+  Component,
   createElement,
-  useMemo,
+  cloneElement,
   useState,
 };
 

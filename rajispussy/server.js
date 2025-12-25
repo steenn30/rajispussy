@@ -3,11 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = __dirname;
-const PUBLIC_DIR = path.join(ROOT, 'public');
-const SRC_DIR = path.join(ROOT, 'src');
 const PORT = process.env.PORT || 3000;
 
-const MIME_TYPES = {
+const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -18,62 +16,34 @@ const MIME_TYPES = {
   '.svg': 'image/svg+xml',
 };
 
-function send(res, status, body, contentType = 'text/plain') {
-  res.writeHead(status, { 'Content-Type': contentType });
+function send(res, code, body, type = 'text/plain') {
+  res.writeHead(code, { 'Content-Type': type });
   res.end(body);
 }
 
-function safeJoin(base, target) {
-  const targetPath = path.join(base, target);
-  if (!targetPath.startsWith(base)) return null;
-  return targetPath;
-}
-
-function resolvePath(urlPath) {
-  const cleanPath = path.normalize(urlPath.split('?')[0]);
-  if (cleanPath === '/' || cleanPath === '') {
-    return path.join(PUBLIC_DIR, 'index.html');
+function resolveFile(urlPath) {
+  const clean = path.normalize(urlPath.split('?')[0]).replace(/^\/+/, '');
+  if (!clean || clean === 'index.html') return path.join(ROOT, 'index.html');
+  const candidate = path.join(ROOT, clean);
+  if (candidate.startsWith(ROOT) && fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+    return candidate;
   }
-
-  if (cleanPath.startsWith('/src/')) {
-    const candidate = safeJoin(SRC_DIR, cleanPath.replace('/src/', ''));
-    return candidate && fs.existsSync(candidate) ? candidate : null;
-  }
-
-  const publicPath = safeJoin(PUBLIC_DIR, cleanPath.replace(/^\//, ''));
-  if (publicPath && fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
-    return publicPath;
-  }
-
-  // If a static asset was explicitly requested but not found, surface a 404
-  if (/\.(js|css|json|png|jpg|jpeg|svg|map)$/.test(cleanPath)) {
-    return null;
-  }
-
-  // Fallback to SPA shell for other routes
-  return path.join(PUBLIC_DIR, 'index.html');
+  return path.join(ROOT, 'index.html');
 }
 
 const server = http.createServer((req, res) => {
-  const target = resolvePath(req.url || '/');
-  if (!target) {
-    send(res, 404, 'Not found');
-    return;
-  }
-
-  fs.readFile(target, (err, data) => {
+  const filePath = resolveFile(req.url || '/');
+  fs.readFile(filePath, (err, data) => {
     if (err) {
-      console.error('Failed to read', target, err);
-      send(res, 404, 'Not found');
+      console.error('Read error', err);
+      send(res, 500, 'Server error');
       return;
     }
-
-    const ext = path.extname(target);
-    const type = MIME_TYPES[ext] || 'application/octet-stream';
-    send(res, 200, data, type);
+    const ext = path.extname(filePath);
+    send(res, 200, data, MIME[ext] || 'application/octet-stream');
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Script Market dev server running at http://localhost:${PORT}`);
+  console.log(`Dev server running at http://localhost:${PORT}`);
 });
