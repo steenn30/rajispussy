@@ -14,27 +14,35 @@ function matchPath(pattern, path) {
   return params;
 }
 
-export class HashRouter extends Component {
+export class Router extends Component {
   constructor(props) {
     super(props);
     this.state = { path: this.getPath() };
-    this.onHashChange = this.onHashChange.bind(this);
+    this.onPop = this.onPop.bind(this);
+    this.navigate = this.navigate.bind(this);
   }
 
   componentDidMount() {
-    window.addEventListener('hashchange', this.onHashChange);
+    window.addEventListener('popstate', this.onPop);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('hashchange', this.onHashChange);
+    window.removeEventListener('popstate', this.onPop);
   }
 
-  onHashChange() {
-    this.setState({ path: this.getPath() }, () => forceRender());
+  onPop() {
+    this.setState({ path: this.getPath() });
   }
 
   getPath() {
-    return window.location.hash.replace(/^#/, '') || '/';
+    const hash = window.location.hash.replace(/^#/, '');
+    return hash || '/';
+  }
+
+  navigate(to) {
+    const target = to.startsWith('#') ? to : `#${to}`;
+    window.history.pushState({}, '', target);
+    this.setState({ path: this.getPath() });
   }
 
   render() {
@@ -46,7 +54,7 @@ export class HashRouter extends Component {
       null,
       ...kids.map((child, idx) => {
         if (!child) return null;
-        return cloneElement(child, { key: child.key || idx, currentPath: path });
+        return cloneElement(child, { key: child.key || idx, currentPath: path, navigate: this.navigate });
       }),
     );
   }
@@ -54,23 +62,27 @@ export class HashRouter extends Component {
 
 export class Route extends Component {
   render() {
-    const { path, element, currentPath } = this.props;
+    const { path, element, currentPath, navigate } = this.props;
     const params = matchPath(path, currentPath || '/');
     if (!params) return null;
-    if (element) return element;
+    if (element) return cloneElement(element, { navigate, params });
     const Child = this.props.component;
-    return Child ? React.createElement(Child, { params }) : null;
+    return Child ? React.createElement(Child, { params, navigate }) : null;
   }
 }
 
 export class Link extends Component {
   render() {
-    const { to, children } = this.props;
+    const { to, children, navigate } = this.props;
+    const href = to.startsWith('#') ? to : `#${to}`;
     const handle = (e) => {
       e.preventDefault();
-      window.location.hash = to.startsWith('#') ? to : `#${to}`;
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      if (navigate) navigate(href);
+      else {
+        window.history.pushState({}, '', href);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
     };
-    return React.createElement('a', { href: to.startsWith('#') ? to : `#${to}`, onClick: handle, className: this.props.className }, children);
+    return React.createElement('a', { href, onClick: handle, className: this.props.className }, children);
   }
 }

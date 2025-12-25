@@ -63,6 +63,7 @@ class FeaturedScripts extends Component {
 
 class FeaturedAuthors extends Component {
   render() {
+    const { navigate } = this.props;
     return React.createElement(
       'section',
       { className: 'card' },
@@ -78,7 +79,7 @@ class FeaturedAuthors extends Component {
             React.createElement(
               'div',
               null,
-              React.createElement(Link, { to: `/author/${encodeURIComponent(author.name)}`, className: 'author-name linkish' }, author.name),
+              React.createElement(Link, { to: `/author/${encodeURIComponent(author.name)}`, className: 'author-name linkish', navigate }, author.name),
               React.createElement(
                 'div',
                 { className: 'author-genres' },
@@ -175,7 +176,7 @@ export default class HomePage extends Component {
         ),
       ),
       React.createElement(FeaturedScripts, { scripts: featured }),
-      React.createElement(FeaturedAuthors, null),
+      React.createElement(FeaturedAuthors, { navigate: this.props.navigate }),
       React.createElement(SearchBar, {
         query: this.state.query,
         onQueryChange: (value) => this.setState({ query: value }),
