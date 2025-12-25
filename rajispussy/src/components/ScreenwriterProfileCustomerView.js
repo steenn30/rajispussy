@@ -1,84 +1,58 @@
 import React, { Component } from '../runtime/react.js';
-import { Link } from '../router.js';
+import html from '../runtime/htm.js';
 
 export default class ScreenwriterProfileCustomerView extends Component {
   renderScript(script) {
-    return React.createElement(
-      'article',
-      { key: script.id, className: 'script-card detailed' },
-      React.createElement(
-        'div',
-        { className: 'script-header' },
-        React.createElement('img', { src: script.image, alt: `${script.title} poster`, className: 'script-logo large' }),
-        React.createElement(
-          'div',
-          null,
-          React.createElement('div', { className: 'tag' }, `$${script.price.toFixed(2)}`),
-          React.createElement('h3', { style: { margin: '4px 0 0' } }, script.title),
-        ),
-      ),
-      React.createElement('p', { className: 'profile-script-desc' }, script.description),
-      React.createElement(
-        'div',
-        { className: 'profile-script-meta' },
-        React.createElement('span', { className: 'tag' }, `Actors needed: ${script.actorsNeeded}`),
-        React.createElement('span', { className: 'tag' }, `Production: ${script.productionNotes}`),
-      ),
-    );
+    return html`<article class="script-card detailed" key=${script.id}>
+      <div class="script-header">
+        <img src=${script.image} alt=${`${script.title} poster`} class="script-logo large" />
+        <div>
+          <div class="tag">${`$${script.price.toFixed(2)}`}</div>
+          <h3 style=${{ margin: '4px 0 0' }}>${script.title}</h3>
+        </div>
+      </div>
+      <p class="profile-script-desc">${script.description}</p>
+      <div class="profile-script-meta">
+        <span class="tag">${`Actors needed: ${script.actorsNeeded}`}</span>
+        <span class="tag">${`Production: ${script.productionNotes}`}</span>
+      </div>
+    </article>`;
   }
 
   render() {
     const { profile } = this.props;
     if (!profile) {
-      return React.createElement(
-        'main',
-        { className: 'app-shell' },
-        React.createElement(
-          'div',
-          { className: 'card' },
-          React.createElement('p', null, 'Profile not found'),
-          React.createElement(Link, { to: '/' }, 'Back to home'),
-        ),
-      );
+      return html`<main class="app-shell">
+        <div class="card">
+          <p>Profile not found</p>
+          <button class="secondary" type="button" onClick=${() => this.props.navigate && this.props.navigate(-1)}>Back</button>
+        </div>
+      </main>`;
     }
 
-    return React.createElement(
-      'main',
-      { className: 'app-shell' },
-      React.createElement(
-        'header',
-        { className: 'page-header' },
-        React.createElement(
-          'div',
-          { style: { display: 'flex', alignItems: 'center', gap: 12 } },
-          React.createElement('img', { src: profile.avatar, alt: `${profile.name} avatar`, className: 'profile-avatar' }),
-          React.createElement(
-            'div',
-            null,
-            React.createElement('p', { className: 'tag', style: { margin: 0 } }, 'Screenwriter profile'),
-            React.createElement('h1', { className: 'page-title' }, profile.name),
-          ),
-        ),
-        React.createElement(Link, { to: '/', className: 'secondary' }, '← Back to home'),
-      ),
-      React.createElement(
-        'section',
-        { className: 'card' },
-        React.createElement('p', { className: 'profile-bio' }, profile.bio),
-        React.createElement(
-          'div',
-          { className: 'profile-meta' },
-          React.createElement('div', { className: 'tag' }, `Scripts available: ${profile.scriptsAvailable}`),
-          React.createElement('div', { className: 'tag' }, `Scripts sold: ${profile.scriptsSold}`),
-          React.createElement('div', { className: 'tag' }, `Awards: ${profile.awards.join(', ') || 'None'}`),
-        ),
-      ),
-      React.createElement(
-        'section',
-        { className: 'card' },
-        React.createElement('h2', null, 'Scripts'),
-        React.createElement('div', { className: 'profile-scripts' }, profile.scripts.map((s) => this.renderScript(s))),
-      ),
-    );
+    return html`<main class="app-shell">
+      <header class="page-header">
+        <div style=${{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src=${profile.avatar} alt=${`${profile.name} avatar`} class="profile-avatar" />
+          <div>
+            <p class="tag" style=${{ margin: 0 }}>Screenwriter profile</p>
+            <h1 class="page-title">${profile.name}</h1>
+          </div>
+        </div>
+        <button class="secondary" type="button" onClick=${() => this.props.navigate && this.props.navigate(-1)}>← Back to home</button>
+      </header>
+      <section class="card">
+        <p class="profile-bio">${profile.bio}</p>
+        <div class="profile-meta">
+          <div class="tag">${`Scripts available: ${profile.scriptsAvailable}`}</div>
+          <div class="tag">${`Scripts sold: ${profile.scriptsSold}`}</div>
+          <div class="tag">${`Awards: ${profile.awards.join(', ') || 'None'}`}</div>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Scripts</h2>
+        <div class="profile-scripts">${profile.scripts.map((s) => this.renderScript(s))}</div>
+      </section>
+    </main>`;
   }
 }
