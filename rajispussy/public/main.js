@@ -172,10 +172,10 @@ function decodeRouteName(value) {
 }
 
 function parseRoute() {
-  const hash = window.location.hash.replace(/^#/, '');
-  const match = hash.match(/^\/author\/(.+)$/);
-  if (match) {
-    return { name: 'author', authorName: decodeRouteName(match[1]) };
+  const hash = window.location.hash.replace(/^#/, '').replace(/^\/+/, '');
+  const [first, ...rest] = hash.split('/');
+  if (first === 'author' && rest.length) {
+    return { name: 'author', authorName: decodeRouteName(rest.join('/')) };
   }
   return { name: 'home' };
 }
