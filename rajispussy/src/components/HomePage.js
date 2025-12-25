@@ -183,7 +183,7 @@ export default class HomePage extends Component {
         ),
       ),
       React.createElement(FeaturedScripts, { scripts: featured }),
-      React.createElement(FeaturedAuthors, null),
+      React.createElement(FeaturedAuthors, { navigate: this.props.navigate }),
       React.createElement(SearchBar, {
         query: this.state.query,
         onQueryChange: (value) => this.setState({ query: value }),
