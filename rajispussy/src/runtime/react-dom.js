@@ -30,7 +30,9 @@ function renderVNode(vnode, path = '0') {
       : props && Array.isArray(props.children)
         ? props.children
         : props && props.children
-          ? [props.children]
+          ? Array.isArray(props.children)
+            ? props.children
+            : [props.children]
           : [];
 
   if (typeof type === 'function' && type.prototype instanceof React.Component) {
