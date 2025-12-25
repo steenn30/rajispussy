@@ -11,6 +11,7 @@ const defaultScripts = [
     genre: 'Sci-Fi',
     price: 24.99,
     featured: true,
+    createdAt: '2025-12-25T09:15:00Z',
     logo:
       'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=200&q=80',
   },
@@ -21,6 +22,7 @@ const defaultScripts = [
     genre: 'Thriller',
     price: 18.5,
     featured: true,
+    createdAt: '2025-12-24T18:45:00Z',
     logo:
       'https://images.unsplash.com/photo-1451188502541-13943edb6acb?auto=format&fit=crop&w=200&q=80',
   },
@@ -31,6 +33,7 @@ const defaultScripts = [
     genre: 'Drama',
     price: 14.0,
     featured: false,
+    createdAt: '2025-12-23T15:20:00Z',
     logo:
       'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=200&q=80',
   },
@@ -41,467 +44,377 @@ const defaultScripts = [
     genre: 'Cyberpunk',
     price: 29.99,
     featured: false,
+    createdAt: '2025-12-22T21:00:00Z',
     logo: '',
+  },
+  {
+    id: 5,
+    title: 'Glass Meridian',
+    author: 'Theo Wilder',
+    genre: 'Adventure',
+    price: 19.99,
+    featured: false,
+    createdAt: '2025-12-25T08:40:00Z',
+    logo:
+      'https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    id: 6,
+    title: 'Midnight Ledger',
+    author: 'Ivy Brooks',
+    genre: 'Drama',
+    price: 12.5,
+    featured: false,
+    createdAt: '2025-12-25T10:10:00Z',
+    logo:
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=200&q=80',
   },
 ];
 
-const GENRES = ['Drama', 'Sci-Fi', 'Thriller', 'Romance', 'Adventure', 'Comedy', 'Cyberpunk'];
-
-function evaluatePassword(password) {
-  const hasLength = password.length >= 8;
-  const hasUpper = /[A-Z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecial = /[^A-Za-z0-9]/.test(password);
-  return { hasLength, hasUpper, hasNumber, hasSpecial };
-}
-
-function Rule({ ok, children }) {
-  return h(
-    'div',
-    { className: `rule ${ok ? 'valid' : ''}` },
-    h('span', null, ok ? '✅' : '⏳'),
-    h('span', null, children),
-  );
-}
-
-function SocialButtons({ onSelect }) {
-  const providers = [
-    { key: 'google', label: 'Google', className: 'google' },
-    { key: 'twitter', label: 'Twitter / X', className: 'twitter' },
-    { key: 'facebook', label: 'Facebook', className: 'facebook' },
+const featuredAuthors = Array.from({ length: 20 }).map((_, i) => {
+  const names = [
+    'Samira Quinn',
+    'Alex Park',
+    'Rina Doyle',
+    'Leo Cross',
+    'Harper Sage',
+    'Nova Lee',
+    'Crispin Hale',
+    'Mara Stone',
+    'Felix Rowan',
+    'Juno Vale',
   ];
+  const genres = [
+    ['Sci-Fi', 'Adventure'],
+    ['Drama', 'Romance'],
+    ['Thriller', 'Mystery'],
+    ['Comedy', 'Romance'],
+    ['Adventure', 'Drama'],
+    ['Fantasy', 'Sci-Fi'],
+    ['Thriller', 'Crime'],
+    ['Drama', 'Biography'],
+    ['Cyberpunk', 'Sci-Fi'],
+    ['Comedy', 'Family'],
+  ];
+  const idx = i % names.length;
+  return {
+    id: i + 1,
+    name: `${names[idx]} #${i + 1}`,
+    topGenres: genres[idx],
+    avatar: `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(names[idx])}-${i}`,
+  };
+});
 
+const authorProfiles = {
+  'Samira Quinn #1': {
+    name: 'Samira Quinn #1',
+    bio: 'Samira Quinn crafts grounded, high-stakes science fiction that spotlights complex family dynamics and moral tradeoffs at the edge of known space.',
+    awards: ['Nebula Screen Award - Best Debut', 'Aurora Spotlight'],
+    scriptsAvailable: 6,
+    scriptsSold: 3,
+    avatar: `https://api.dicebear.com/7.x/shapes/svg?seed=Samira-Quinn-1`,
+    scripts: [
+      {
+        id: 'sq-1',
+        title: 'Starward Kin',
+        price: 24.99,
+        image: 'https://images.unsplash.com/photo-1451188502541-13943edb6acb?auto=format&fit=crop&w=400&q=80',
+        description:
+          'A generational ship drama that follows two estranged siblings forced to cooperate when the ship’s AI fractures into rival factions. The story examines duty versus autonomy, with sweeping set pieces in hydroponic forests, maintenance shafts, and observation decks. Political intrigue collides with family stakes as the siblings navigate loyalty to crew and kin.',
+        actorsNeeded: 8,
+        productionNotes: 'Practical sets for corridors; holographic UI overlays; limited CGI for exterior ship shots and zero-g sequences.',
+      },
+      {
+        id: 'sq-2',
+        title: 'The Glass Warden',
+        price: 18.5,
+        image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80',
+        description:
+          'On a remote research moon, a security officer uncovers a clandestine program rewriting scientists’ memories to erase dissent. As recollections bleed through, the officer must decide whether to preserve the painful truth or uphold an engineered peace, threading a tense ethical thriller through cold laboratories and ice caverns.',
+        actorsNeeded: 6,
+        productionNotes: 'Minimal CGI beyond atmospheric sky domes; favors practical lighting and in-camera haze for sterile labs.',
+      },
+    ],
+  },
+  'Alex Park #2': {
+    name: 'Alex Park #2',
+    bio: 'Alex Park blends thriller pacing with character-first romance, focusing on ordinary people pulled into extraordinary conspiracies.',
+    awards: ['Silver Quill', 'Festival Jury Mention'],
+    scriptsAvailable: 4,
+    scriptsSold: 5,
+    avatar: `https://api.dicebear.com/7.x/shapes/svg?seed=Alex-Park-2`,
+    scripts: [
+      {
+        id: 'ap-1',
+        title: 'Signal of Two',
+        price: 16.0,
+        image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=400&q=80',
+        description:
+          'A radio engineer intercepts a clandestine distress call that mirrors a message he sent years earlier, pulling him and his former partner into a globe-spanning chase. Trust fractures and rekindles as the pair decode signals while evading corporate mercenaries.',
+        actorsNeeded: 7,
+        productionNotes: 'Urban locations with light CGI for signal visualizations; car chases rely on practical stunts.',
+      },
+    ],
+  },
+};
+
+function InfoBar() {
   return h(
     'div',
-    { className: 'social-grid' },
-    providers.map((provider) =>
+    { className: 'info-bar' },
+    h('div', null, h('p', { className: 'tag', style: { margin: 0 } }, 'Script Market')), // banner
+    h(
+      'div',
+      { className: 'info-bar__actions' },
+      h('span', { className: 'info-bar__text' }, 'Discover, feature, and share scripts.'),
       h(
         'button',
         {
-          key: provider.key,
           type: 'button',
-          className: `social-btn ${provider.className}`,
-          onClick: () => onSelect(provider.key),
+          className: 'btn contribute',
+          onClick: () => alert('Thanks for your interest in contributing!'),
         },
-        h('span', { 'aria-hidden': true }, '🔗'),
-        provider.label,
+        '+ Contribute',
       ),
     ),
   );
 }
 
-function AuthPanel({ onAccountCreated }) {
-  const [form, setForm] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirm: '',
-  });
-  const [status, setStatus] = useState('');
-  const [lastProvider, setLastProvider] = useState('');
-
-  const rules = evaluatePassword(form.password);
-  const rulesSatisfied = Object.values(rules).every(Boolean);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.fullName.trim() || !form.email.trim()) {
-      setStatus('Please add your name and email to create an account.');
-      return;
-    }
-
-    if (!rulesSatisfied) {
-      setStatus('Make sure your password meets all requirements.');
-      return;
-    }
-
-    if (form.password !== form.confirm) {
-      setStatus('Passwords need to match.');
-      return;
-    }
-
-    const payload = {
-      name: form.fullName.trim(),
-      email: form.email.trim(),
-      createdAt: new Date().toISOString(),
-    };
-
-    onAccountCreated?.(payload);
-    setStatus('Account created successfully! You can now explore scripts.');
-    setForm({ fullName: '', email: '', password: '', confirm: '' });
-  };
-
-  const handleSocial = (provider) => {
-    setLastProvider(provider);
-    setStatus(`Redirecting to ${provider} for secure sign-in...`);
-  };
-
+function FeaturedScripts({ scripts }) {
+  const topTwo = scripts.slice(0, 2);
   return h(
-    'div',
-    { className: 'card' },
-    h('h2', null, 'Create an account'),
-    h(
-      'form',
-      { onSubmit: handleSubmit, className: 'form-grid' },
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'fullName' }, 'Full name'),
-        h('input', {
-          id: 'fullName',
-          name: 'fullName',
-          placeholder: 'Samira Writer',
-          value: form.fullName,
-          onInput: handleChange,
-          required: true,
-        }),
-      ),
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'email' }, 'Email'),
-        h('input', {
-          id: 'email',
-          name: 'email',
-          type: 'email',
-          placeholder: 'you@example.com',
-          value: form.email,
-          onInput: handleChange,
-          required: true,
-        }),
-      ),
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'password' }, 'Password'),
-        h('input', {
-          id: 'password',
-          name: 'password',
-          type: 'password',
-          placeholder: 'At least 8 characters',
-          value: form.password,
-          onInput: handleChange,
-          required: true,
-        }),
-        h(
-          'div',
-          { className: 'password-rules', 'aria-live': 'polite' },
-          h(Rule, { ok: rules.hasLength }, 'At least 8 characters'),
-          h(Rule, { ok: rules.hasUpper }, 'Contains an uppercase letter'),
-          h(Rule, { ok: rules.hasNumber }, 'Contains a number'),
-          h(Rule, { ok: rules.hasSpecial }, 'Contains a special symbol'),
-        ),
-      ),
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'confirm' }, 'Confirm password'),
-        h('input', {
-          id: 'confirm',
-          name: 'confirm',
-          type: 'password',
-          placeholder: 'Repeat password',
-          value: form.confirm,
-          onInput: handleChange,
-          required: true,
-        }),
-      ),
-      h('button', { type: 'submit' }, 'Create account'),
-    ),
-    h('hr', { className: 'divider' }),
-    h(
-      'p',
-      { style: { marginTop: 0, marginBottom: 8, color: '#cbd5e1' } },
-      'Or sign in with',
-    ),
-    h(SocialButtons, { onSelect: handleSocial }),
-    lastProvider
-      ? h(
-          'p',
-          { style: { color: '#cbd5e1', marginTop: 8 } },
-          'Last selected: ',
-          h('strong', null, lastProvider),
-        )
-      : null,
-    status ? h('div', { className: 'status-message' }, status) : null,
-  );
-}
-
-function ScriptForm({ onAdd }) {
-  const [form, setForm] = useState({
-    title: '',
-    author: '',
-    genre: 'Drama',
-    price: '15.00',
-    logo: '',
-    featured: false,
-  });
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.title.trim() || !form.author.trim()) return;
-
-    onAdd({
-      id: Date.now(),
-      title: form.title.trim(),
-      author: form.author.trim(),
-      genre: form.genre,
-      price: Number(form.price) || 0,
-      featured: form.featured,
-      logo: form.logo.trim(),
-    });
-
-    setForm({ title: '', author: '', genre: 'Drama', price: '15.00', logo: '', featured: false });
-  };
-
-  return h(
-    'div',
-    { className: 'card' },
-    h('h2', null, 'Publish a script'),
-    h(
-      'form',
-      { className: 'form-grid', onSubmit: handleSubmit },
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'title' }, 'Title'),
-        h('input', {
-          id: 'title',
-          name: 'title',
-          placeholder: 'The Glass Lighthouse',
-          value: form.title,
-          onInput: handleChange,
-          required: true,
-        }),
-      ),
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'author' }, 'Author'),
-        h('input', {
-          id: 'author',
-          name: 'author',
-          placeholder: 'Alex Parker',
-          value: form.author,
-          onInput: handleChange,
-          required: true,
-        }),
-      ),
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'genre' }, 'Genre'),
-        h(
-          'select',
-          { id: 'genre', name: 'genre', value: form.genre, onInput: handleChange },
-          GENRES.map((genre) => h('option', { key: genre, value: genre }, genre)),
-        ),
-      ),
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'price' }, 'Price (USD)'),
-        h('input', {
-          id: 'price',
-          name: 'price',
-          type: 'number',
-          min: '0',
-          step: '0.01',
-          value: form.price,
-          onInput: handleChange,
-        }),
-      ),
-      h(
-        'div',
-        { className: 'form-group' },
-        h('label', { htmlFor: 'logo' }, 'Logo URL (optional)'),
-        h('input', {
-          id: 'logo',
-          name: 'logo',
-          placeholder: 'https://...',
-          value: form.logo,
-          onInput: handleChange,
-        }),
-      ),
-      h(
-        'div',
-        {
-          className: 'form-group',
-          style: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-        },
-        h('input', {
-          id: 'featured',
-          name: 'featured',
-          type: 'checkbox',
-          checked: form.featured,
-          onInput: handleChange,
-        }),
-        h(
-          'label',
-          { htmlFor: 'featured', style: { margin: 0 } },
-          'Feature this script on the front page',
-        ),
-      ),
-      h('button', { type: 'submit' }, 'Add script'),
-    ),
-  );
-}
-
-function ScriptCard({ script }) {
-  const logoFallback =
-    'https://images.unsplash.com/photo-1451188502541-13943edb6acb?auto=format&fit=crop&w=200&q=80';
-
-  return h(
-    'article',
-    { className: 'script-card' },
-    h(
-      'div',
-      { className: 'script-header' },
-      h('img', {
-        src: script.logo || logoFallback,
-        alt: `${script.title} logo`,
-        className: 'script-logo',
-      }),
-      h(
-        'div',
-        null,
-        h('div', { className: 'tag' }, script.genre),
-        h('h3', { style: { margin: '4px 0 0' } }, script.title),
-        h('p', { style: { margin: 0, color: '#cbd5e1' } }, `by ${script.author}`),
-      ),
-    ),
-    h('p', { className: 'price' }, `$${script.price.toFixed(2)}`),
-    h(
-      'div',
-      { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
-      script.featured ? h('div', { className: 'tag' }, 'Featured') : null,
-      script.logo ? h('div', { className: 'tag' }, 'Custom logo attached') : h('div', { className: 'tag' }, 'Default logo'),
-    ),
-  );
-}
-
-function ScriptList({ scripts }) {
-  const [query, setQuery] = useState('');
-  const [genre, setGenre] = useState('All');
-
-  const filtered = useMemo(
-    () =>
-      scripts.filter((script) => {
-        const matchesQuery = `${script.title} ${script.author}`
-          .toLowerCase()
-          .includes(query.toLowerCase());
-        const matchesGenre = genre === 'All' || script.genre === genre;
-        return matchesQuery && matchesGenre;
-      }),
-    [scripts, query, genre],
-  );
-
-  return h(
-    'div',
-    { className: 'card' },
-    h('h2', null, 'Browse movie scripts'),
-    h(
-      'div',
-      { className: 'search-row' },
-      h('input', {
-        placeholder: 'Search by title or author',
-        value: query,
-        onInput: (e) => setQuery(e.target.value),
-      }),
-      h(
-        'select',
-        { value: genre, onInput: (e) => setGenre(e.target.value) },
-        ['All', ...GENRES].map((g) => h('option', { key: g, value: g }, g)),
-      ),
-      h(
-        'button',
-        { type: 'button', className: 'secondary', onClick: () => setQuery('') },
-        'Clear search',
-      ),
-    ),
-    h(
-      'div',
-      { className: 'script-grid', style: { marginTop: 12 } },
-      filtered.map((script) => h(ScriptCard, { key: script.id, script })),
-    ),
-  );
-}
-
-function FeaturedStrip({ scripts }) {
-  if (!scripts.length) return null;
-  return h(
-    'div',
+    'section',
     { className: 'card' },
     h('h2', null, 'Featured scripts'),
     h(
       'div',
-      { className: 'script-grid' },
-      scripts.map((script) => h(ScriptCard, { key: script.id, script })),
+      { className: 'featured-grid' },
+      topTwo.map((script) =>
+        h(
+          'article',
+          { key: script.id, className: 'script-card promo' },
+          h(
+            'div',
+            { className: 'script-header' },
+            h('img', {
+              src:
+                script.logo ||
+                'https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?auto=format&fit=crop&w=200&q=80',
+              alt: `${script.title} logo`,
+              className: 'script-logo',
+            }),
+            h(
+              'div',
+              null,
+              h('div', { className: 'tag' }, script.genre),
+              h('h3', { style: { margin: '4px 0 0' } }, script.title),
+              h('p', { style: { margin: 0, color: '#cbd5e1' } }, `by ${script.author}`),
+            ),
+          ),
+          h('p', { className: 'price' }, `$${script.price.toFixed(2)}`),
+          h('div', { className: 'tag' }, 'Advertised placement'),
+        ),
+      ),
     ),
   );
+}
+
+function FeaturedAuthors({ authors }) {
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
+
+  const openProfile = (name) => {
+    const profile = authorProfiles[name];
+    if (profile) setSelectedAuthor(profile);
+  };
+
+  const closeProfile = () => setSelectedAuthor(null);
+
+  return h(
+    'section',
+    { className: 'card' },
+    h('h2', null, 'Featured authors'),
+    h(
+      'div',
+      { className: 'authors-grid' },
+      authors.map((author) =>
+        h(
+          'article',
+          { key: author.id, className: 'author-card' },
+          h('img', { src: author.avatar, alt: `${author.name} avatar`, className: 'author-avatar' }),
+          h(
+            'div',
+            null,
+            h(
+              'button',
+              { className: 'author-name linkish', type: 'button', onClick: () => openProfile(author.name) },
+              author.name,
+            ),
+            h(
+              'div',
+              { className: 'author-genres' },
+              author.topGenres.map((g) => h('span', { className: 'tag', key: g }, g)),
+            ),
+          ),
+        ),
+      ),
+    ),
+    selectedAuthor ? h(AuthorProfile, { profile: selectedAuthor, onClose: closeProfile }) : null,
+  );
+}
+
+function SearchBar({ query, setQuery }) {
+  return h(
+    'div',
+    { className: 'card' },
+    h('h2', null, 'Search scripts'),
+    h('input', {
+      placeholder: 'Search by title, author, or genre',
+      value: query,
+      onInput: (e) => setQuery(e.target.value),
+    }),
+  );
+}
+
+function RecentScripts({ scripts, query }) {
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase();
+    return [...scripts]
+      .filter((s) => `${s.title} ${s.author} ${s.genre}`.toLowerCase().includes(q))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [scripts, query]);
+
+  return h(
+    'section',
+    { className: 'card' },
+    h('h2', null, 'Most recently posted'),
+    h(
+      'div',
+      { className: 'script-grid' },
+      filtered.map((script) =>
+        h(
+          'article',
+          { key: script.id, className: 'script-card' },
+          h(
+            'div',
+            { className: 'script-header' },
+            h('img', {
+              src:
+                script.logo ||
+                'https://images.unsplash.com/photo-1451188502541-13943edb6acb?auto=format&fit=crop&w=200&q=80',
+              alt: `${script.title} logo`,
+              className: 'script-logo',
+            }),
+            h(
+              'div',
+              null,
+              h('div', { className: 'tag' }, script.genre),
+              h('h3', { style: { margin: '4px 0 0' } }, script.title),
+              h('p', { style: { margin: 0, color: '#cbd5e1' } }, `by ${script.author}`),
+            ),
+          ),
+          h('p', { className: 'price' }, `$${script.price.toFixed(2)}`),
+          h('div', { className: 'tag subtle' }, `Posted ${new Date(script.createdAt).toLocaleString()}`),
+        ),
+      ),
+    ),
+  );
+}
+
+// Auth components kept separate for future routing but not rendered on the landing page yet.
+function CreateAccount() {
+  return h('div', null, 'Create Account form placeholder');
+}
+
+function SignIn() {
+  return h('div', null, 'Sign In form placeholder');
+}
+
+function AuthorProfile({ profile, onClose }) {
+  return h(
+    'div',
+    { className: 'overlay' },
+    h(
+      'div',
+      { className: 'profile-card' },
+      h(
+        'div',
+        { className: 'profile-header' },
+        h('img', { src: profile.avatar, alt: `${profile.name} avatar`, className: 'profile-avatar' }),
+        h('div', null, h('h2', { className: 'profile-name' }, profile.name), h('p', { className: 'profile-bio' }, profile.bio)),
+        h('button', { className: 'secondary', type: 'button', onClick: onClose }, 'Close'),
+      ),
+      h(
+        'div',
+        { className: 'profile-meta' },
+        h('div', { className: 'tag' }, `Scripts available: ${profile.scriptsAvailable}`),
+        h('div', { className: 'tag' }, `Scripts sold: ${profile.scriptsSold}`),
+        h('div', { className: 'tag' }, `Awards: ${profile.awards.join(', ') || 'None'}`),
+      ),
+      h('h3', null, 'Scripts'),
+      h(
+        'div',
+        { className: 'profile-scripts' },
+        profile.scripts.map((script) =>
+          h(
+            'article',
+            { key: script.id, className: 'script-card detailed' },
+            h(
+              'div',
+              { className: 'script-header' },
+              h('img', { src: script.image, alt: `${script.title} poster`, className: 'script-logo large' }),
+              h('div', null, h('div', { className: 'tag' }, `$${script.price.toFixed(2)}`), h('h3', { style: { margin: '4px 0 0' } }, script.title)),
+            ),
+            h('p', { className: 'profile-script-desc' }, script.description),
+            h(
+              'div',
+              { className: 'profile-script-meta' },
+              h('span', { className: 'tag' }, `Actors needed: ${script.actorsNeeded}`),
+              h('span', { className: 'tag' }, `Production: ${script.productionNotes}`),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+function Router({ route, children }) {
+  // For now, always render the home experience and skip sign-in/up routes.
+  return h(React.Fragment || 'div', null, children);
 }
 
 function App() {
-  const [scripts, setScripts] = useState(defaultScripts);
-  const [recentAccount, setRecentAccount] = useState(null);
-
-  const featuredScripts = useMemo(() => scripts.filter((s) => s.featured), [scripts]);
-
-  const handleAddScript = (script) => {
-    setScripts((prev) => [script, ...prev]);
-  };
+  const [scripts] = useState(defaultScripts);
+  const [query, setQuery] = useState('');
+  const featured = useMemo(() => scripts.filter((s) => s.featured), [scripts]);
 
   return h(
-    'main',
-    { className: 'app-shell' },
+    Router,
+    { route: 'home' },
     h(
-      'header',
-      { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+      'main',
+      { className: 'app-shell' },
+      h(InfoBar),
       h(
-        'div',
-        null,
-        h(
-          'p',
-          { className: 'tag', style: { marginBottom: 8 } },
-          'React front-end library demo',
-        ),
+        'header',
+        { className: 'page-header' },
         h('h1', { className: 'page-title' }, 'Script Market'),
         h(
           'p',
-          { style: { color: '#cbd5e1', maxWidth: 620 } },
-          'Sign up securely, preview featured stories, and search through a curated catalog of movie scripts. Add your own scripts with pricing, genres, and logos to showcase your writing.',
+          { style: { color: '#cbd5e1', maxWidth: 720 } },
+          'Featured scripts, highlighted authors, and the latest drops—all in one place.',
         ),
       ),
-      recentAccount
-        ? h('div', { className: 'tag' }, `✅ Account ready for ${recentAccount.name}`)
-        : null,
+      h(FeaturedScripts, { scripts: featured }),
+      h(FeaturedAuthors, { authors: featuredAuthors }),
+      h(SearchBar, { query, setQuery }),
+      h(RecentScripts, { scripts, query }),
     ),
-    h(
-      'div',
-      { className: 'section-grid' },
-      h(AuthPanel, { onAccountCreated: setRecentAccount }),
-      h(ScriptForm, { onAdd: handleAddScript }),
-    ),
-    h(FeaturedStrip, { scripts: featuredScripts }),
-    h(ScriptList, { scripts }),
   );
 }
 
-const root = createRoot(document.getElementById('root'));
 const rootContainer = document.getElementById('root');
+const root = createRoot(rootContainer);
 if (rootContainer) {
   rootContainer.textContent = 'Loading Script Market...';
 }
