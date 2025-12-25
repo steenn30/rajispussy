@@ -12,7 +12,7 @@ A React-style front-end experience for showcasing movie scripts with account cre
 ## Getting started
 1. Install Node 18+.
 2. Install dependencies: `npm install`.
-3. Start the static host: `npm start` (uses `http-server` to serve the SPA entry point for all routes). Hash-based routing means it also works when served from any static host.
+3. Start the static host: `npm start` (auto-fetches `http-server` via `npx` to serve the SPA entry point for all routes). Hash-based routing means it also works when served from any static host.
 4. Open `http://localhost:3000` (or your configured host) in your browser.
 
 The app ships as native ES modules in `src/`—no bundler required. All React-like behavior is powered by the local runtime in `src/runtime` to avoid external downloads. There is no `public/` directory; everything is served from the repository root using static hosting (`npm start` runs `http-server` for convenience).

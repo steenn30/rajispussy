@@ -4,7 +4,7 @@
   "description": "Offline React-style demo for script marketplace",
   "private": true,
   "scripts": {
-    "start": "http-server . -c-1 -p 3000"
+    "start": "npx http-server . -c-1 -p 3000"
   },
   "devDependencies": {
     "http-server": "^14.1.1"
