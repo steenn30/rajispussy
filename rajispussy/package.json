@@ -1,0 +1,9 @@
+{
+  "name": "script-market",
+  "version": "1.0.0",
+  "description": "Offline-friendly React-style demo for script marketplace",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  }
+}
