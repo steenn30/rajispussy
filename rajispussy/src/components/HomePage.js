@@ -1,5 +1,5 @@
 import React, { Component } from '../runtime/react.js';
-import { Link } from 'react-router-dom';
+import { Link } from '../router/react-router-dom.js';
 import { authors, scripts } from '../data/seed.js';
 
 class InfoBar extends Component {

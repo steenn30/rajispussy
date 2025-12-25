@@ -80,7 +80,7 @@ export function Link({ to, children, className }) {
     e.preventDefault();
     navigateRef(clean);
   };
-  return React.createElement('a', { href, onClick: handle, class: className }, children);
+  return React.createElement('a', { href, onClick: handle, className }, children);
 }
 
 function matchPath(pattern, pathname) {
