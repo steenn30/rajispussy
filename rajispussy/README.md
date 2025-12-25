@@ -14,7 +14,7 @@ A React-style front-end experience for showcasing movie scripts with account cre
 2. Start the demo server: `npm start` (uses `server.js` to serve the SPA entry point for all routes).
 3. Open `http://localhost:3000` (or your configured host) in your browser.
 
-The app ships as native ES modules in `src/`—no bundler required. All React-like behavior is powered by the local runtime in `src/runtime` to avoid external downloads.
+The app ships as native ES modules in `src/`—no bundler required. All React-like behavior is powered by the local runtime in `src/runtime` to avoid external downloads. There is no `public/` directory; everything is served from the repository root via `server.js`.
 
 ## Development notes
 - State is in-memory for quick demos; there is no backend or persistence layer.
